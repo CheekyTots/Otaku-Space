@@ -1,0 +1,52 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+import './Auth.css'; // Optional, for styling
+
+function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    const { user, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate('/'); // Redirect to Home page after login
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <h2>Login to OtakuSpace</h2>
+      {error && <p className="error-message">{error}</p>}
+      <form onSubmit={handleLogin} className="auth-form">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" className="button">Log In</button>
+      </form>
+    </div>
+  );
+}
+
+export default Login;
